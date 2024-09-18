@@ -1,4 +1,5 @@
 import { reactive } from 'vue';
+import axios from 'axios'; // Importiamo Axios
 
 // Creiamo un oggetto reattivo per lo stato
 const state = reactive({
@@ -10,19 +11,10 @@ const state = reactive({
 const fetchCards = async () => {
   state.loading = true; // Impostiamo loading su true prima della chiamata
   try {
-    const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php?num=20&offset=0', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get('https://db.ygoprodeck.com/api/v7/cardinfo.php?num=20&offset=0');
 
-    if (!response.ok) {
-      throw new Error('Errore nella chiamata API');
-    }
-
-    const data = await response.json();
-    state.cards = data.data; // Aggiorniamo le carte con i dati ricevuti dall'API
+    // Axios converte automaticamente la risposta in JSON, quindi possiamo accedere ai dati direttamente
+    state.cards = response.data.data;
   } catch (error) {
     console.error('Errore nel caricamento delle carte:', error);
   } finally {
