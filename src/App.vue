@@ -1,5 +1,12 @@
 <template>
   <div id="app" class="container">
+    <!-- Filtro per Archetipi -->
+    <Filter @filterSelected="fetchCardsByArchetype" />
+
+    <!-- Numero Totale di Carte -->
+    <ResultCount :total="cards.length" />
+
+    <!-- Loader o Lista di Carte -->
     <Loader v-if="loading" />
     <CardList v-else :cards="cards" />
   </div>
@@ -8,36 +15,63 @@
 <script>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import Filter from './components/Filter.vue';
 import CardList from './components/CardList.vue';
 import Loader from './components/Loader.vue';
-import { store } from './store';  // Importa lo store
+import ResultCount from './components/ResultCount.vue';
+import { store } from './store';
 
 export default {
   components: {
+    Filter,
     CardList,
-    Loader
+    Loader,
+    ResultCount
   },
   setup() {
     const loading = ref(true);
     const cards = ref([]);
 
+    // Funzione per ottenere tutte le carte
     const fetchCards = async () => {
       try {
         const response = await axios.get('https://db.ygoprodeck.com/api/v7/cardinfo.php?num=20&offset=0');
-        store.cards = response.data.data;  // Salva nello store
-        cards.value = store.cards;  // Assegna i dati reattivi alle cards
+        store.cards = response.data.data;
+        cards.value = store.cards;
       } catch (error) {
-        console.error('Error fetching cards:', error);
+        console.error('Errore durante il caricamento delle carte:', error);
       } finally {
-        loading.value = false;  // Termina il caricamento
+        loading.value = false;
       }
     };
 
-    onMounted(fetchCards);  // Chiama l'API quando il componente è montato
+    // Funzione per ottenere carte filtrate per archetipo
+    const fetchCardsByArchetype = async (archetype) => {
+      loading.value = true;
+      try {
+        let url = 'https://db.ygoprodeck.com/api/v7/cardinfo.php';
+        if (archetype) {
+          url += `?archetype=${archetype}`;
+        } else {
+          url += '?num=20&offset=0';
+        }
+
+        const response = await axios.get(url);
+        cards.value = response.data.data;
+      } catch (error) {
+        console.error('Errore durante il caricamento delle carte filtrate:', error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    // Carica carte all'avvio
+    onMounted(fetchCards);
 
     return {
       loading,
-      cards
+      cards,
+      fetchCardsByArchetype
     };
   }
 };

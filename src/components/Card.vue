@@ -4,7 +4,7 @@
       <img :src="card.card_images[0].image_url" class="card-img-top" alt="Card image" />
       <div class="card-body">
         <h5 class="card-title">{{ card.name }}</h5>
-        <!-- <p class="card-text">{{ card.race }}</p> -->
+        <p class="card-text">{{ card.archetype }}</p>
       </div>
     </div>
   </div>
