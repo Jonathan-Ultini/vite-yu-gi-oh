@@ -1,10 +1,16 @@
 <template>
   <div id="app" class="container">
-    <!-- Filtro per Archetipi -->
-    <Filter @filterSelected="fetchCardsByArchetype" />
-
-    <!-- Numero Totale di Carte -->
-    <ResultCount :total="cards.length" />
+    <!-- Filtro per Archetipi e Numero Totale di Carte -->
+    <div class="row align-items-center mb-3">
+      <div class="col">
+        <!-- Filtro per Archetipi -->
+        <Filter @filterSelected="fetchCardsByArchetype" />
+      </div>
+      <div class="col text-end">
+        <!-- Numero Totale di Carte -->
+        <ResultCount :total="cards.length" />
+      </div>
+    </div>
 
     <!-- Loader o Lista di Carte -->
     <Loader v-if="loading" />
