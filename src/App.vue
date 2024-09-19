@@ -1,46 +1,44 @@
 <template>
-  <div id="app">
-    <h1>Yu-Gi-Oh! Cards</h1>
-
-    <!-- Loader -->
-    <Loader v-if="state.loading" />
-
-    <!-- Se non stiamo caricando, mostra le card -->
-    <div v-if="!state.loading" class="card-container">
-      <Card v-for="card in state.cards" :key="card.id" :card="card" />
-    </div>
+  <div id="app" class="container">
+    <Loader v-if="loading" />
+    <CardList v-else :cards="cards" />
   </div>
 </template>
 
 <script>
-import { onMounted } from 'vue';
-import Card from './components/Card.vue';
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import CardList from './components/CardList.vue';
 import Loader from './components/Loader.vue';
-import { useCardStore } from './store'; // Importiamo lo store
+import { store } from './store';  // Importa lo store
 
 export default {
   components: {
-    Card,
-    Loader,
+    CardList,
+    Loader
   },
   setup() {
-    const { state, fetchCards } = useCardStore(); // Usiamo lo store
+    const loading = ref(true);
+    const cards = ref([]);
 
-    onMounted(() => {
-      fetchCards(); // Chiamata API al montaggio del componente
-    });
+    const fetchCards = async () => {
+      try {
+        const response = await axios.get('https://db.ygoprodeck.com/api/v7/cardinfo.php?num=20&offset=0');
+        store.cards = response.data.data;  // Salva nello store
+        cards.value = store.cards;  // Assegna i dati reattivi alle cards
+      } catch (error) {
+        console.error('Error fetching cards:', error);
+      } finally {
+        loading.value = false;  // Termina il caricamento
+      }
+    };
+
+    onMounted(fetchCards);  // Chiama l'API quando il componente è montato
 
     return {
-      state, // Restituiamo lo stato reattivo
+      loading,
+      cards
     };
-  },
+  }
 };
 </script>
-
-<style>
-.card-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-</style>

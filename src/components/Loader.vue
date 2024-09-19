@@ -1,18 +1,10 @@
-<!-- mostrerà caricamento -->
-<script>
-export default {}
-</script>
-
 <template>
-  <div class="loader">
-    <p>Caricamento in corso...</p>
+  <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading</span>
+    </div>
   </div>
 </template>
 
-<style>
-.loader {
-  font-size: 1.5em;
-  color: #333;
-  text-align: center;
-}
-</style>
+
+<style scoped></style>
